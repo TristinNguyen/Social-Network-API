@@ -1,11 +1,31 @@
 const router = require('express').Router();
 
-router.get()
 
-router.get()
+//gets all answers//
+router.get('/', (req, res) => {
+    Answer.findAll()
+        .then(dbAnswerData => res.json(dbAnswerData))
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        })
+})
+router.route('/api/thought/:id')
+.get ((req, res) => {
 
-router.post()
+})
+.post((req, res) => {
 
-router.put()
+})
+.put((req, res) => {
 
-router.delete()
+})
+.delete((req,res) => {
+    
+})
+
+
+
+
+
+module.exports = router;
