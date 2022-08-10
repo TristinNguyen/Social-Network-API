@@ -1,11 +1,19 @@
 const router = require('express')
 
-router.get()
+router.route('/', (req, res))
+    .get()
+    .post()
+router.route('/:id')
+    .get()
+    .put()
+    .delete()
+router.route("/:id/friend/:friendId")
+    .put()
+    .delete()
 
-router.get()
 
-router.post()
 
-router.put()
 
-router.delete()
+
+
+module.exports = router;
