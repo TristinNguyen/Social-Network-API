@@ -1,3 +1,4 @@
+const {Thoughts, User} = require('../Models')
 const router = require('express').Router();
 
 
@@ -40,10 +41,10 @@ router.route('/api/thought/:id')
             })
     })
 
-    .post((req, res) => {})
+    .post(({params, body}, res) => {})
         Thoughts.create(body)
         .then (({_id})=> {
-            return URLSearchParams.findOneandUpdate(
+            return User.findOneandUpdate(
                 {_id:  params.userId},
                 {$push: {thoughts: _id}},
                 {new: true}
@@ -93,7 +94,7 @@ router.route('/api/thought/:id')
 
 router.route('/:thoughtID/reactions')
     .post((req, res) => {
-    Thoughts.findOneAndUpdateReaction({
+    Thoughts.findOneAndUpdate({
         _id: params.thoughtID
     }, {$push: {reactions: body}}, 
     {
@@ -122,7 +123,7 @@ router.route('/:thoughtID/reactions')
 
 router.route('/:thoughtID/reactions/:reactionID')
     .delete((res, req) => {
-        Thoughts.findOneAndUpdateReaction(
+        Thoughts.findOneAndUpdate(
             {_id:params.thoughtID},
             {$pull: {reactions: {reactionId: params.reactionId}}},
             {new: true}
