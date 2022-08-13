@@ -1,4 +1,4 @@
-const {User} = require('../Models');
+const {User} = require('../../Models');
 const router = require('express').Router();
 
 router.route('/')
@@ -11,16 +11,14 @@ router.route('/')
         .catch(err => {
             console.log(err);
             res.status(500).json(err);
-        })
+        });
     })
     .post(({body}, res) => {
         User.create(body)
-        .then(dbNewUser => {
-            if(!req.body.username) {
-                res.status(404).json({message:"You need a username!"})
-                return;
-            }
-        })
+        .then(dbUserData => res.json(dbUserData))
+        .catch(err => res.status(400).json(err));
+    }),
+        
 router.route('/:id')
     .get(({params}, res) => {
         User.findOne({_id:params.id})
@@ -33,7 +31,7 @@ router.route('/:id')
         })
         .catch(err => res.status(400).json(err))
     })
-    })
+    
     .put((req, res) => {
         User.findOneAndUpdate(
             {_id: params.id}, body,
@@ -62,7 +60,7 @@ router.route('/:id')
         .catch(err => res.status(400).json(err));
     })
 router.route("/:id/friend/:friendId")
-    .post(({oarams}, res) => {
+    .post(({params}, res) => {
         User.findOneAndUpdate(
             {_id: params.userId},
             {$push: {friends: params.friendId}},

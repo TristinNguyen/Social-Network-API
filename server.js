@@ -10,7 +10,7 @@ app.use(express.static('public'));
 
 app.use(require('./controller'));
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/deep-thoughts-api', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/social-network-API', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });

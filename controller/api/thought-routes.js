@@ -1,4 +1,4 @@
-const {Thoughts, User} = require('../Models')
+const {Thoughts, User} = require('../../Models')
 const router = require('express').Router();
 
 
@@ -41,14 +41,13 @@ router.route('/api/thought/:id')
             })
     })
 
-    .post(({params, body}, res) => {})
+    .post(({params, body}, res) => {
         Thoughts.create(body)
         .then (({_id})=> {
             return User.findOneandUpdate(
                 {_id:  params.userId},
                 {$push: {thoughts: _id}},
-                {new: true}
-            )
+                {new: true});
         })
         .then (dbThoughtsData => {
             if(!dbThoughtsData) {
@@ -58,7 +57,7 @@ router.route('/api/thought/:id')
             res.json(dbThoughtsData)
         })
         .catch(err => res.json(err))
-        
+    })
     .put((req, res) => {
         Thoughts.findOneAndUpdate({
                 _id: params.id
@@ -82,15 +81,17 @@ router.route('/api/thought/:id')
             })
             .catch(err => res.json(err));
     })
-    .delete((req, res) => {
+    .delete(({params}, res) => {
         Thoughts.findOneandDelete({_id: params.id})
-        if (!dbThoughtsData) {
-            res.status(404).json({message: 'No thoughts with this specific ID'});
-            return;
+        .then(dbThoughtsData => {
+            if (!dbThoughtsData) {
+                res.status(404).json({message: 'No thoughts with this specific ID'});
+                return;
         }
         res.json(dbThoughtsData);
     })
     .catch(err => res.json(err));
+    }),
 
 router.route('/:thoughtID/reactions')
     .post((req, res) => {
@@ -122,7 +123,7 @@ router.route('/:thoughtID/reactions')
 })
 
 router.route('/:thoughtID/reactions/:reactionID')
-    .delete((res, req) => {
+    .delete((req, res) => {
         Thoughts.findOneAndUpdate(
             {_id:params.thoughtID},
             {$pull: {reactions: {reactionId: params.reactionId}}},
