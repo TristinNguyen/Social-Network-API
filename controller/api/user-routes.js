@@ -14,9 +14,12 @@ router.route('/')
         });
     })
     .post(({body}, res) => {
-        User.create(body)
-        .then(dbUserData => res.json(dbUserData))
-        .catch(err => res.status(400).json(err));
+            User.create(body)
+            .then(dbUserData => res.json(dbUserData))
+            .catch(err => {console.log(err)
+                res.status(400).json(err)});
+    
+      
     }),
         
 router.route('/:id')
@@ -74,7 +77,7 @@ router.route("/:id/friend/:friendId")
         })
         .catch ((err) => res.status(400).json(err));
     })
-    .delete((req, res) => {
+    .delete(({params}, res) => {
         User.findOneAndUpdate(
             {_id: params.userId},
             { $pull: {friends: params.friendId}},

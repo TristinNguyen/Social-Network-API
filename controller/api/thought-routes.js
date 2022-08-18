@@ -1,65 +1,68 @@
-const {Thoughts, User} = require('../../Models')
+const {Thought, User} = require('../../Models')
 const router = require('express').Router();
 
 
 //gets all answers//
 router.get('/', (req, res) => {
-    Answer.find({})
+    Thought.find({})
         .populate({
             path: 'reactions',
             select: '-__v'
         })
         .select('-__v')
-        .then(dbAnswerData => res.json(dbAnswerData))
+        .then(dbThoughtData => res.json(dbThoughtData))
         .catch(err => {
             console.log(err);
             res.status(500).json(err);
         })
 })
-router.route('/api/thought/:id')
-    .get((req, res) => {
-        Thoughts.findOne({
-                _id: params.id
-            })
+router.route('/:id')
+    .get(({params}, res) => {
+        Thought.findOne(
+            {_id: params.id}
+            )
             .populate({
                 path: 'reactions',
                 select: '-__v'
             })
             .select('-__v')
-            .then(dbThoughtsData => {
-                if (!dbThoughtsData) {
+            .then(dbThoughtData => {
+                if (!dbThoughtData) {
                     res.status(500).json({
                         message: 'No thoughts with this ID!'
                     });
                     return;
                 }
-                res.json(dbThoughtsData)
+                res.json(dbThoughtData)
             })
             .catch(err => {
                 console.log(err);
                 res.sendStatus(400);
             })
     })
-
     .post(({params, body}, res) => {
-        Thoughts.create(body)
+        console.log(User)
+        console.log(Thought)
+        Thought.create(body)
         .then (({_id})=> {
-            return User.findOneandUpdate(
+            User.findOneAndUpdate(
                 {_id:  params.userId},
-                {$push: {thoughts: _id}},
-                {new: true});
+                {$push: {thought: _id}},
+                {new: true})
+                .then (dbThoughtData => {
+                    console.log("testing121")
+                    console.log(dbThoughtData)
+                    if(!dbThoughtData) {
+                        res.status(404).json({ message: 'No thoughts with this particular ID!' });
+                        return;
+                    }
+                    res.json(dbThoughtData)
+                })
+                .catch(err => res.json(err))
         })
-        .then (dbThoughtsData => {
-            if(!dbThoughtsData) {
-                res.status(404).json({ message: 'No thoughts with this particular ID!' });
-                return;
-            }
-            res.json(dbThoughtsData)
-        })
-        .catch(err => res.json(err))
     })
-    .put((req, res) => {
-        Thoughts.findOneAndUpdate({
+    .put(({params, body}, res) => {
+        Thought.findOneAndUpdate({
                 _id: params.id
             }, body, {
                 new: true,
@@ -70,33 +73,33 @@ router.route('/api/thought/:id')
                 select: '-__v'
             })
             .select('-__v')
-            .then(dbThoughtsData => {
-                if (!dbThoughtsData) {
+            .then(dbThoughtData => {
+                if (!dbThoughtData) {
                     res.status(404).json({
                         message: 'No thoughts with this specific ID'
                     });
                     return;
                 }
-                res.json(dbThoughtsData);
+                res.json(dbThoughtData);
             })
             .catch(err => res.json(err));
     })
     .delete(({params}, res) => {
-        Thoughts.findOneandDelete({_id: params.id})
-        .then(dbThoughtsData => {
-            if (!dbThoughtsData) {
+        Thought.findOneandDelete({_id: params.id})
+        .then(dbThoughtData => {
+            if (!dbThoughtData) {
                 res.status(404).json({message: 'No thoughts with this specific ID'});
                 return;
         }
-        res.json(dbThoughtsData);
+        res.json(dbThoughtData);
     })
     .catch(err => res.json(err));
     }),
 
-router.route('/:thoughtID/reactions')
-    .post((req, res) => {
-    Thoughts.findOneAndUpdate({
-        _id: params.thoughtID
+router.route('/:thoughtId/reactions')
+    .post(({params, body}, res) => {
+    Thought.findOneAndUpdate({
+        _id: params.thoughtId
     }, {$push: {reactions: body}}, 
     {
         new: true,
@@ -107,14 +110,14 @@ router.route('/:thoughtID/reactions')
         select: '-__v'
     })
     .select('-__v')
-    .then(dbThoughtsData => {
-        if (!dbThoughtsData) {
+    .then(dbThoughtData => {
+        if (!dbThoughtData) {
             res.status(500).json({
                 message: 'No thoughts with this ID!'
             });
             return;
         }
-        res.json(dbThoughtsData)
+        res.json(dbThoughtData)
     })
     .catch(err => {
         console.log(err);
@@ -122,19 +125,19 @@ router.route('/:thoughtID/reactions')
     })
 })
 
-router.route('/:thoughtID/reactions/:reactionID')
+router.route('/:thoughtId/reactions/:reactionID')
     .delete((req, res) => {
-        Thoughts.findOneAndUpdate(
-            {_id:params.thoughtID},
+        Thought.findOneAndUpdate(
+            {_id:params.thoughtId},
             {$pull: {reactions: {reactionId: params.reactionId}}},
             {new: true}
         )
-        .then(dbThoughtsData => {
-            if (!dbThoughtsData) {
+        .then(dbThoughtData => {
+            if (!dbThoughtData) {
                 res.status(404).json({ message: 'No reactions with this ID!'});
                 return;
             }
-            res.json(dbThoughtsData);
+            res.json(dbThoughtData);
         })
         .catch(err => res.status(400).json(err));
     })
