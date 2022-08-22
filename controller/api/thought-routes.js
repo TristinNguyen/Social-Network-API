@@ -45,8 +45,9 @@ router.route('/:id')
         console.log(Thought)
         Thought.create(body)
         .then (({_id})=> {
+            console.log(params)
             User.findOneAndUpdate(
-                {_id:  params.userId},
+                {_id:  params.id},
                 {$push: {thought: _id}},
                 {new: true})
                 .then (dbThoughtData => {
