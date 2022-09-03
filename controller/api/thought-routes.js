@@ -86,7 +86,7 @@ router.route('/:id')
             .catch(err => res.json(err));
     })
     .delete(({params}, res) => {
-        Thought.findOneandDelete({_id: params.id})
+        Thought.findOneAndDelete({_id: params.id})
         .then(dbThoughtData => {
             if (!dbThoughtData) {
                 res.status(404).json({message: 'No thoughts with this specific ID'});
@@ -127,7 +127,7 @@ router.route('/:thoughtId/reactions')
 })
 
 router.route('/:thoughtId/reactions/:reactionID')
-    .delete((req, res) => {
+    .delete(({params}, res) => {
         Thought.findOneAndUpdate(
             {_id:params.thoughtId},
             {$pull: {reactions: {reactionId: params.reactionId}}},

@@ -62,7 +62,7 @@ router.route('/:id')
         .catch(err => res.status(400).json(err));
     })
 router.route("/:id/friend/:friendId")
-    .post(({params}, res) => {
+    .put(({params}, res) => {
         User.findOneAndUpdate(
             {_id: params.userId},
             {$push: {friends: params.friendId}},
